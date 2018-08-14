@@ -105,6 +105,22 @@ describe('Testing jsonapi-server', () => {
         })
       })
 
+      it('filter without attribute should error', done => {
+        const url = 'http://localhost:16006/rest/articles?filter=baz'
+        helpers.request({
+          method: 'GET',
+          url
+        }, (err, res, json) => {
+          assert.equal(err, null)
+          json = helpers.validateError(json)
+          assert.equal(res.statusCode, '403', 'Expecting 403 FORBIDDEN')
+          const error = json.errors[0]
+          assert.equal(error.code, 'EFORBIDDEN')
+          assert.equal(error.title, 'Invalid filter')
+          done()
+        })
+      })
+
       it('unknown multiple attribute should error', done => {
         const url = 'http://localhost:16006/rest/articles?filter[foo]=bar&filter[foo]=baz'
         helpers.request({
